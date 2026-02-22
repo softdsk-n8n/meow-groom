@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.addEventListener('click', () => {
             menuToggle.classList.toggle('menu-toggle--open');
             nav.classList.toggle('nav--open');
+            document.body.style.overflow = nav.classList.contains('nav--open') ? 'hidden' : '';
         });
 
         // Close menu when clicking a link
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('click', () => {
                 menuToggle.classList.remove('menu-toggle--open');
                 nav.classList.remove('nav--open');
+                document.body.style.overflow = '';
             });
         });
     }
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 4. Booking Form Submission Mock
+    // 4. Booking Form Mock
     const form = document.getElementById('bookingForm');
     const formMessage = document.getElementById('formMessage');
 
@@ -43,34 +45,41 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            // Simple validation (relying mostly on HTML5 'required' attribute)
-            const name = document.getElementById('name').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-
-            if (name === '' || phone === '') {
-                return; // Let browser HTML5 validation handle it visually
-            }
-
-            // Mock API Call / Submission logic
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Отправка...';
+            submitBtn.textContent = 'Обработка...';
             submitBtn.disabled = true;
 
-            // Simulate network delay
             setTimeout(() => {
                 form.reset();
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
                 
-                // Show success message
                 formMessage.style.display = 'block';
-                
-                // Hide after 5 seconds
-                setTimeout(() => {
-                    formMessage.style.display = 'none';
-                }, 5000);
+                setTimeout(() => { formMessage.style.display = 'none'; }, 5000);
             }, 1000);
         });
     }
+
+    // 5. Intersection Observer for Reveal Animations
+    const revealElements = document.querySelectorAll('.reveal-up');
+    
+    const revealCallback = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                // Optional: Stop observing once revealed
+                // observer.unobserve(entry.target);
+            }
+        });
+    };
+
+    const revealOptions = {
+        threshold: 0.15, // Trigger when 15% of element is visible
+        rootMargin: "0px 0px -50px 0px" 
+    };
+
+    const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+
+    revealElements.forEach(el => revealObserver.observe(el));
 });
